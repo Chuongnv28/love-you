@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>Lời Tỏ Tình 3D Siêu Cấp</title>
+  <title>Mưa Tình Yêu 3D Mạnh</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     html, body {
@@ -38,38 +38,32 @@
     }
 
     .scene {
-      position: absolute;
-      top: 50%;
-      left: 50%;
+      position: relative;
+      width: 100%;
+      height: 100%;
       transform-style: preserve-3d;
-      transform: translate(-50%, -50%);
-      text-align: center;
       z-index: 1;
     }
 
-    .layer {
-      position: relative;
-      margin: 10px 0;
-    }
-
-    .line {
-      font-size: 24px;
-      font-weight: bold;
-      opacity: 0;
-      transform: translateY(-100px);
+    .falling-line {
+      position: absolute;
       white-space: nowrap;
-      display: inline-block;
-      color: #fff;
+      font-weight: bold;
+      color: white;
       text-shadow:
         0 0 5px #fff,
         0 0 10px #ff00ff,
         0 0 20px #ff00ff,
         0 0 40px #ff00ff;
-      animation: dropIn 0.8s forwards;
+      animation: fall linear infinite;
     }
 
+    .layer1 { font-size: 28px; z-index: 4; animation-duration: 6s; }
+    .layer2 { font-size: 22px; z-index: 3; animation-duration: 8s; }
+    .layer3 { font-size: 18px; z-index: 2; animation-duration: 10s; }
+    .layer4 { font-size: 15px; z-index: 1; animation-duration: 12s; }
+
     .heart {
-      display: inline-block;
       margin-left: 8px;
       color: #ff5ebc;
       animation: blink 1s infinite;
@@ -80,22 +74,24 @@
       50% { opacity: 0.3; }
     }
 
-    @keyframes dropIn {
-      0% { transform: translateY(-100px); opacity: 0; }
-      100% { transform: translateY(0); opacity: 1; }
+    @keyframes fall {
+      0% {
+        transform: translateY(-20vh);
+        opacity: 0;
+      }
+      10% { opacity: 1; }
+      90% { opacity: 1; }
+      100% {
+        transform: translateY(120vh);
+        opacity: 0;
+      }
     }
   </style>
 </head>
 <body>
 
 <div class="stars" id="stars"></div>
-
-<div class="scene" id="scene">
-  <div class="layer" id="layer1"></div>
-  <div class="layer" id="layer2"></div>
-  <div class="layer" id="layer3"></div>
-  <div class="layer" id="layer4"></div>
-</div>
+<div class="scene" id="scene"></div>
 
 <script>
   const lines = [
@@ -116,25 +112,39 @@
     "Chúng ta là định mệnh không thể tách rời 💞"
   ];
 
-  const layers = [layer1, layer2, layer3, layer4];
-  let index = 0;
-  let delayTime = 0;
+  const scene = document.getElementById('scene');
+  const layers = ['layer1', 'layer2', 'layer3', 'layer4'];
 
-  layers.forEach((layer) => {
-    const groupSize = Math.ceil(lines.length / layers.length);
-    for (let j = 0; j < groupSize && index < lines.length; j++, index++) {
-      const div = document.createElement("div");
-      div.className = "line";
-      div.style.animationDelay = `${delayTime}s`;
-      div.innerHTML = lines[index] + '<span class="heart">💖</span>';
-      layer.appendChild(div);
-      delayTime += 0.3;
+  function spawnFallingLine(text, layerClass) {
+    const span = document.createElement('div');
+    span.className = `falling-line ${layerClass}`;
+    span.innerHTML = text + '<span class="heart">💖</span>';
+    span.style.left = Math.random() * 90 + '%';
+    span.style.animationDuration = getDuration(layerClass);
+    scene.appendChild(span);
+    setTimeout(() => span.remove(), 15000);
+  }
+
+  function getDuration(layer) {
+    switch (layer) {
+      case 'layer1': return '6s';
+      case 'layer2': return '8s';
+      case 'layer3': return '10s';
+      case 'layer4': return '12s';
+      default: return '8s';
     }
-  });
+  }
 
-  // Tạo sao nền
+  // Tạo mưa liên tục
+  setInterval(() => {
+    const line = lines[Math.floor(Math.random() * lines.length)];
+    const layer = layers[Math.floor(Math.random() * layers.length)];
+    spawnFallingLine(line, layer);
+  }, 300);
+
+  // Nền sao
   const stars = document.getElementById('stars');
-  for (let i = 0; i < 120; i++) {
+  for (let i = 0; i < 100; i++) {
     const s = document.createElement('div');
     s.className = 'star';
     s.style.top = Math.random() * 100 + '%';
@@ -143,27 +153,15 @@
     stars.appendChild(s);
   }
 
-  // 🎯 Hiệu ứng nghiêng 3D
-  const scene = document.getElementById('scene');
-
-  // Chuột / chạm kéo
+  // Hiệu ứng 3D mạnh khi chuột di chuyển
   window.addEventListener('mousemove', (e) => {
     const centerX = window.innerWidth / 2;
     const centerY = window.innerHeight / 2;
-    const rotateX = ((e.clientY - centerY) / centerY) * -10;
-    const rotateY = ((e.clientX - centerX) / centerX) * 10;
-    scene.style.transform = `translate(-50%, -50%) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+    const rotateX = ((e.clientY - centerY) / centerY) * -35; // mạnh hơn
+    const rotateY = ((e.clientX - centerX) / centerX) * 35;
+    scene.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
   });
 
-  // 📱 Cảm biến điện thoại
+  // Hiệu ứng 3D mạnh khi nghiêng điện thoại
   if (window.DeviceOrientationEvent) {
-    window.addEventListener("deviceorientation", function(event) {
-      const rotateX = event.beta ? (event.beta - 50) / 4 : 0;
-      const rotateY = event.gamma ? (event.gamma - 50) / 4 : 0;
-      scene.style.transform = `translate(-50%, -50%) rotateX(${-rotateX}deg) rotateY(${rotateY}deg)`;
-    }, true);
-  }
-</script>
-
-</body>
-</html>
+    window.addEventListener("deviceorientation", function(event
