@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>Mưa Tình Yêu 3D Mạnh</title>
+  <title>Mưa Tình Yêu 3D</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     html, body {
@@ -12,6 +12,17 @@
       overflow: hidden;
       height: 100vh;
       font-family: 'Segoe UI', sans-serif;
+    }
+
+    .notice {
+      position: fixed;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: #fff;
+      font-size: 16px;
+      z-index: 9999;
+      text-shadow: 0 0 5px #fff;
     }
 
     .stars {
@@ -90,6 +101,7 @@
 </head>
 <body>
 
+<div class="notice">💌 Đang rơi mưa tỏ tình... Chờ một chút!</div>
 <div class="stars" id="stars"></div>
 <div class="scene" id="scene"></div>
 
@@ -135,7 +147,14 @@
     }
   }
 
-  // Tạo mưa liên tục
+  // Spawn ngay vài dòng để không bị đen
+  for (let i = 0; i < 6; i++) {
+    const line = lines[Math.floor(Math.random() * lines.length)];
+    const layer = layers[Math.floor(Math.random() * layers.length)];
+    spawnFallingLine(line, layer);
+  }
+
+  // Rơi liên tục
   setInterval(() => {
     const line = lines[Math.floor(Math.random() * lines.length)];
     const layer = layers[Math.floor(Math.random() * layers.length)];
@@ -153,15 +172,23 @@
     stars.appendChild(s);
   }
 
-  // Hiệu ứng 3D mạnh khi chuột di chuyển
+  // Hiệu ứng 3D nghiêng mạnh
   window.addEventListener('mousemove', (e) => {
     const centerX = window.innerWidth / 2;
     const centerY = window.innerHeight / 2;
-    const rotateX = ((e.clientY - centerY) / centerY) * -35; // mạnh hơn
-    const rotateY = ((e.clientX - centerX) / centerX) * 35;
+    const rotateX = ((e.clientY - centerY) / centerY) * -25;
+    const rotateY = ((e.clientX - centerX) / centerX) * 25;
     scene.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
   });
 
-  // Hiệu ứng 3D mạnh khi nghiêng điện thoại
   if (window.DeviceOrientationEvent) {
-    window.addEventListener("deviceorientation", function(event
+    window.addEventListener("deviceorientation", function(event) {
+      const rotateX = event.beta ? (event.beta - 50) * 1.2 : 0;
+      const rotateY = event.gamma ? (event.gamma - 50) * 1.2 : 0;
+      scene.style.transform = `rotateX(${-rotateX}deg) rotateY(${rotateY}deg)`;
+    }, true);
+  }
+</script>
+
+</body>
+</html>
