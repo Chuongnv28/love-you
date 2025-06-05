@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Lời Tỏ Tình 3D Siêu Cấp</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: black;
+      overflow: hidden;
+      height: 100vh;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    .stars {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .star {
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      background: white;
+      border-radius: 50%;
+      opacity: 0.6;
+      animation: twinkle 2s infinite ease-in-out;
+    }
+
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.2; }
+      50% { opacity: 1; }
+    }
+
+    .scene {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform-style: preserve-3d;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      z-index: 1;
+    }
+
+    .layer {
+      position: relative;
+      margin: 10px 0;
+    }
+
+    .line {
+      font-size: 24px;
+      font-weight: bold;
+      opacity: 0;
+      transform: translateY(-100px);
+      white-space: nowrap;
+      display: inline-block;
+      color: #fff;
+      text-shadow:
+        0 0 5px #fff,
+        0 0 10px #ff00ff,
+        0 0 20px #ff00ff,
+        0 0 40px #ff00ff;
+      animation: dropIn 0.8s forwards;
+    }
+
+    .heart {
+      display: inline-block;
+      margin-left: 8px;
+      color: #ff5ebc;
+      animation: blink 1s infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    @keyframes dropIn {
+      0% { transform: translateY(-100px); opacity: 0; }
+      100% { transform: translateY(0); opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="stars" id="stars"></div>
+
+<div class="scene" id="scene">
+  <div class="layer" id="layer1"></div>
+  <div class="layer" id="layer2"></div>
+  <div class="layer" id="layer3"></div>
+  <div class="layer" id="layer4"></div>
+</div>
+
+<script>
+  const lines = [
+    "💫 Gặp em là định mệnh",
+    "Tình yêu không có điểm dừng 💘",
+    "Chúng ta là mã hóa hoàn hảo 🧬",
+    "Em là gen trội của anh 😍",
+    "Từng dòng ADN đều gọi tên em 💗",
+    "Không gì tách nổi đôi ta 💍",
+    "Yêu em từ tế bào đầu tiên 🧠",
+    "Và mãi đến tận cuối chuỗi sống 💓",
+    "Anh luôn tìm em trong mọi giấc mơ 💭",
+    "Em là nắng mai trong đời anh ☀️",
+    "Chỉ cần em, thế giới này đủ rồi 🌍",
+    "Mỗi tin nhắn của em là một niềm vui 📩",
+    "Anh chỉ muốn nắm tay em mãi mãi 🤝",
+    "Trái tim anh đã bị em chiếm trọn 💘",
+    "Chúng ta là định mệnh không thể tách rời 💞"
+  ];
+
+  const layers = [layer1, layer2, layer3, layer4];
+  let index = 0;
+  let delayTime = 0;
+
+  layers.forEach((layer) => {
+    const groupSize = Math.ceil(lines.length / layers.length);
+    for (let j = 0; j < groupSize && index < lines.length; j++, index++) {
+      const div = document.createElement("div");
+      div.className = "line";
+      div.style.animationDelay = `${delayTime}s`;
+      div.innerHTML = lines[index] + '<span class="heart">💖</span>';
+      layer.appendChild(div);
+      delayTime += 0.3;
+    }
+  });
+
+  // Tạo sao nền
+  const stars = document.getElementById('stars');
+  for (let i = 0; i < 120; i++) {
+    const s = document.createElement('div');
+    s.className = 'star';
+    s.style.top = Math.random() * 100 + '%';
+    s.style.left = Math.random() * 100 + '%';
+    s.style.animationDelay = Math.random() * 2 + 's';
+    stars.appendChild(s);
+  }
+
+  // 🎯 Hiệu ứng nghiêng 3D
+  const scene = document.getElementById('scene');
+
+  // Chuột / chạm kéo
+  window.addEventListener('mousemove', (e) => {
+    const centerX = window.innerWidth / 2;
+    const centerY = window.innerHeight / 2;
+    const rotateX = ((e.clientY - centerY) / centerY) * -10;
+    const rotateY = ((e.clientX - centerX) / centerX) * 10;
+    scene.style.transform = `translate(-50%, -50%) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+  });
+
+  // 📱 Cảm biến điện thoại
+  if (window.DeviceOrientationEvent) {
+    window.addEventListener("deviceorientation", function(event) {
+      const rotateX = event.beta ? (event.beta - 50) / 4 : 0;
+      const rotateY = event.gamma ? (event.gamma - 50) / 4 : 0;
+      scene.style.transform = `translate(-50%, -50%) rotateX(${-rotateX}deg) rotateY(${rotateY}deg)`;
+    }, true);
+  }
+</script>
+
+</body>
+</html>
